@@ -31,28 +31,44 @@ const Dashboard = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["records"],
     queryFn: async () => {
-      const response = await fetch(
-        "https://gateway.codeheroes.com.br/webhook/data/registros/?p=10"
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
+      try {
+        console.log("Fetching data...");
+        const response = await fetch(
+          "https://gateway.codeheroes.com.br/webhook/data/registros/?p=10",
+          {
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const jsonData = await response.json();
+        console.log("Fetched data:", jsonData);
+        return jsonData as Record[];
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        throw err;
       }
-      return response.json() as Promise<Record[]>;
     },
   });
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load data. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     navigate("/");
   };
-
-  if (error) {
-    toast({
-      title: "Error",
-      description: "Failed to load data. Please try again later.",
-      variant: "destructive",
-    });
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -65,7 +81,11 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow">
-          <DataTable data={data || []} isLoading={isLoading} onImageClick={setSelectedImage} />
+          <DataTable 
+            data={data || []} 
+            isLoading={isLoading} 
+            onImageClick={setSelectedImage} 
+          />
         </div>
 
         {selectedImage && (

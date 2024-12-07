@@ -25,14 +25,18 @@ interface DataTableProps {
 }
 
 export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => {
+  console.log("DataTable received data:", data);
+
   if (isLoading) {
     return <TableSkeleton />;
   }
 
   const renderImageThumbnails = (imageUrls: string) => {
+    if (!imageUrls) return null;
+    
     const urls = imageUrls.split(",").map((url) => url.trim());
     return (
-      <div className="image-grid">
+      <div className="flex gap-2 flex-wrap">
         {urls.map((url, index) => (
           <img
             key={index}
@@ -61,7 +65,7 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((record, index) => (
+          {Array.isArray(data) && data.map((record, index) => (
             <TableRow key={index}>
               <TableCell>{record["Carimbo de data/hora"]}</TableCell>
               <TableCell>{record.Cliente}</TableCell>
