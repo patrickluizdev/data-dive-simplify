@@ -7,6 +7,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TableSkeleton } from "./TableSkeleton";
+import { Button } from "@/components/ui/button";
+import { FileEdit, FileText } from "lucide-react";
 
 interface Record {
   "Carimbo de data/hora": string;
@@ -62,6 +64,7 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
             <TableHead>Photos</TableHead>
             <TableHead>Operator</TableHead>
             <TableHead>Company Name</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,6 +79,24 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
               </TableCell>
               <TableCell>{record.Operador}</TableCell>
               <TableCell>{record["Nome da empresa"]}</TableCell>
+              <TableCell className="text-right space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => console.log('Edit record:', record)}
+                >
+                  <FileEdit className="h-4 w-4" />
+                  <span className="sr-only">Edit</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => console.log('Generate report for record:', record)}
+                >
+                  <FileText className="h-4 w-4" />
+                  <span className="sr-only">Generate Report</span>
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
