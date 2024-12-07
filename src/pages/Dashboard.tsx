@@ -16,6 +16,10 @@ interface Record {
   "Nome da empresa": string;
 }
 
+interface ApiResponse {
+  data: Record[];
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -45,9 +49,9 @@ const Dashboard = () => {
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
-        const jsonData = await response.json();
+        const jsonData = await response.json() as ApiResponse;
         console.log("Fetched data:", jsonData);
-        return jsonData as Record[];
+        return jsonData.data; // Return the data array from the response
       } catch (err) {
         console.error("Error fetching data:", err);
         throw err;
