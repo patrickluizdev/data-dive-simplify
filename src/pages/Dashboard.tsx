@@ -27,6 +27,12 @@ interface ApiResponse {
   data: Record[];
 }
 
+interface TotalResponse {
+  data: {
+    total: number;
+  };
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -62,6 +68,33 @@ const Dashboard = () => {
         return jsonData.data;
       } catch (err) {
         console.error("Error fetching data:", err);
+        throw err;
+      }
+    },
+  });
+
+  const { data: totalData } = useQuery({
+    queryKey: ["total"],
+    queryFn: async () => {
+      try {
+        console.log("Fetching total count...");
+        const response = await fetch(
+          "https://gateway.codeheroes.com.br/webhook/data/total",
+          {
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch total count");
+        }
+        const jsonData = await response.json() as TotalResponse;
+        console.log("Fetched total count:", jsonData);
+        return jsonData.data.total;
+      } catch (err) {
+        console.error("Error fetching total count:", err);
         throw err;
       }
     },
@@ -108,14 +141,13 @@ const Dashboard = () => {
           />
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 flex justify-between items-center">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious 
                   onClick={handlePreviousPage}
-                  className="cursor-pointer"
-                  disabled={page === 1}
+                  className={`cursor-pointer ${page === 1 ? 'opacity-50' : ''}`}
                 />
               </PaginationItem>
               <PaginationItem>
@@ -129,6 +161,10 @@ const Dashboard = () => {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
+          
+          <div className="text-sm text-gray-600">
+            Total Records: {totalData || 'Loading...'}
+          </div>
         </div>
 
         {selectedImage && (
