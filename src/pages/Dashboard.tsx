@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import { ImageModal } from "@/components/ImageModal";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Record {
   "Carimbo de data/hora": string;
@@ -24,6 +31,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -33,12 +41,12 @@ const Dashboard = () => {
   }, [navigate]);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["records"],
+    queryKey: ["records", page],
     queryFn: async () => {
       try {
-        console.log("Fetching data...");
+        console.log(`Fetching data for page ${page}...`);
         const response = await fetch(
-          "https://gateway.codeheroes.com.br/webhook/data/registros/?p=10",
+          `https://gateway.codeheroes.com.br/webhook/data/registros/?p=${page * 10}`,
           {
             mode: "cors",
             headers: {
@@ -51,7 +59,7 @@ const Dashboard = () => {
         }
         const jsonData = await response.json() as ApiResponse;
         console.log("Fetched data:", jsonData);
-        return jsonData.data; // Return the data array from the response
+        return jsonData.data;
       } catch (err) {
         console.error("Error fetching data:", err);
         throw err;
@@ -74,6 +82,14 @@ const Dashboard = () => {
     navigate("/");
   };
 
+  const handleNextPage = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setPage((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
@@ -90,6 +106,29 @@ const Dashboard = () => {
             isLoading={isLoading} 
             onImageClick={setSelectedImage} 
           />
+        </div>
+
+        <div className="mt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={handlePreviousPage}
+                  className="cursor-pointer"
+                  disabled={page === 1}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="px-4 py-2">Page {page}</span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={handleNextPage}
+                  className="cursor-pointer"
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
 
         {selectedImage && (
