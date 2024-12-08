@@ -17,10 +17,15 @@ interface Record {
   "Carimbo de data/hora": string;
   Cliente: string;
   Matricula: string;
+  "Número encomenda copy": string | null;
   "Número encomenda": string;
   "Registos - Fotos": string;
   Operador: string;
   "Nome da empresa": string;
+  "Número Contentor": string;
+  Id: number;
+  CreatedAt: string;
+  UpdatedAt: string | null;
 }
 
 interface ApiResponse {
