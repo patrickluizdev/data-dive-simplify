@@ -96,6 +96,12 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
     setVisibleColumns(newVisibleColumns);
   };
 
+  const handleGenerateReport = (recordId: number) => {
+    console.log('Generating report for record ID:', recordId);
+    const reportUrl = `https://gateway.codeheroes.com.br/webhook/data/relatorio?id=${recordId}`;
+    window.open(reportUrl, '_blank');
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
@@ -158,7 +164,7 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => console.log('Generate report for record:', record)}
+                    onClick={() => handleGenerateReport(record.Id)}
                   >
                     <FileText className="h-4 w-4" />
                     <span className="sr-only">Generate Report</span>
