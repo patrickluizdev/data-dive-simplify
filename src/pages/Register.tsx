@@ -157,6 +157,7 @@ const Register = () => {
               orderNumber={formData.orderNumber}
               containerNumber={formData.containerNumber}
               registrationNumber={formData.registrationNumber}
+              companyName={formData.companyName}
               onOrderNumberChange={(value) =>
                 setFormData({ ...formData, orderNumber: value })
               }
@@ -165,6 +166,9 @@ const Register = () => {
               }
               onRegistrationNumberChange={(value) =>
                 setFormData({ ...formData, registrationNumber: value })
+              }
+              onCompanyNameChange={(value) =>
+                setFormData({ ...formData, companyName: value })
               }
             />
 
