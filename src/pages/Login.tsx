@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,6 +67,13 @@ const Login = () => {
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
+            <div className="text-center">
+              <Link to="/register">
+                <Button variant="link" type="button" className="mt-2">
+                  Register New Cargo
+                </Button>
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
