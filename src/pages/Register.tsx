@@ -1,39 +1,59 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { ImageUploadSection } from "@/components/ImageUploadSection";
+import { ClientSection } from "@/components/forms/ClientSection";
+import { CargoSection } from "@/components/forms/CargoSection";
+import { OperatorSection } from "@/components/forms/OperatorSection";
+
+interface FormData {
+  companyName: string;
+  orderNumber: string;
+  containerNumber: string;
+  registrationNumber: string;
+  operator: string;
+}
+
+interface ApiResponse {
+  data: [
+    {
+      Clientes: string[];
+    },
+    {
+      Operadores: string[];
+    }
+  ];
+}
 
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     companyName: "",
     orderNumber: "",
     containerNumber: "",
     registrationNumber: "",
-    operator: "Alda",
+    operator: "",
   });
   const [photos, setPhotos] = useState<File[]>([]);
 
-  const companies = [
-    "L-Founders",
-    "AR.CA. SRL",
-    "ADELINA SILVA - UNIPESSOAL, LDA",
-    "EGIDIO JOAQUIM OLIVEIRA ABREU",
-    "LEINER & KIKA MOBELHANDELS GmbH",
-  ];
+  // Fetch companies and operators from API
+  const { data: apiData, isLoading: isLoadingData } = useQuery({
+    queryKey: ["formOptions"],
+    queryFn: async () => {
+      const response = await fetch(
+        "https://gateway.codeheroes.com.br/webhook/data/registros/info"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch form options");
+      }
+      return response.json() as Promise<ApiResponse>;
+    },
+  });
 
   const convertToBase64 = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -49,7 +69,6 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // Convert all photos to base64
       const base64Photos = await Promise.all(photos.map(convertToBase64));
 
       const payload = {
@@ -105,6 +124,17 @@ const Register = () => {
     }
   };
 
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen p-6 bg-gray-50 flex items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  const companies = apiData?.data[0].Clientes || [];
+  const operators = apiData?.data[1].Operadores || [];
+
   return (
     <div className="min-h-screen p-6 bg-gray-50">
       <Card className="max-w-2xl mx-auto">
@@ -115,93 +145,40 @@ const Register = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Client Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">1. Client</h3>
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name</Label>
-                <Select
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, companyName: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {companies.map((company) => (
-                      <SelectItem key={company} value={company}>
-                        {company}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <ClientSection
+              companies={companies}
+              value={formData.companyName}
+              onChange={(value) =>
+                setFormData({ ...formData, companyName: value })
+              }
+            />
 
-            {/* Cargo Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">2. Cargo Information</h3>
-              <div className="space-y-2">
-                <Label htmlFor="orderNumber">Order Number</Label>
-                <Input
-                  id="orderNumber"
-                  required
-                  value={formData.orderNumber}
-                  onChange={(e) =>
-                    setFormData({ ...formData, orderNumber: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="containerNumber">
-                  Container Number (optional)
-                </Label>
-                <Input
-                  id="containerNumber"
-                  value={formData.containerNumber}
-                  onChange={(e) =>
-                    setFormData({ ...formData, containerNumber: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="registrationNumber">Registration Number</Label>
-                <Input
-                  id="registrationNumber"
-                  required
-                  value={formData.registrationNumber}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      registrationNumber: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
+            <CargoSection
+              orderNumber={formData.orderNumber}
+              containerNumber={formData.containerNumber}
+              registrationNumber={formData.registrationNumber}
+              onOrderNumberChange={(value) =>
+                setFormData({ ...formData, orderNumber: value })
+              }
+              onContainerNumberChange={(value) =>
+                setFormData({ ...formData, containerNumber: value })
+              }
+              onRegistrationNumberChange={(value) =>
+                setFormData({ ...formData, registrationNumber: value })
+              }
+            />
 
-            {/* Image Upload Section */}
             <ImageUploadSection
               photos={photos}
               onPhotosChange={setPhotos}
               onCameraCapture={handleCameraCapture}
             />
 
-            {/* Operator Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">4. Operator</h3>
-              <div className="space-y-2">
-                <Label htmlFor="operator">Responsible Operator</Label>
-                <Input
-                  id="operator"
-                  value={formData.operator}
-                  onChange={(e) =>
-                    setFormData({ ...formData, operator: e.target.value })
-                  }
-                />
-              </div>
-            </div>
+            <OperatorSection
+              operators={operators}
+              value={formData.operator}
+              onChange={(value) => setFormData({ ...formData, operator: value })}
+            />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Submitting..." : "Submit Registration"}
