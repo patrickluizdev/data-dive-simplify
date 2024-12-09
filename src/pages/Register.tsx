@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { ImageUploadSection } from "@/components/ImageUploadSection";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -34,24 +35,36 @@ const Register = () => {
     "LEINER & KIKA MOBELHANDELS GmbH",
   ];
 
+  const convertToBase64 = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      formDataToSend.append(key, value);
-    });
-    photos.forEach((photo) => {
-      formDataToSend.append("photos", photo);
-    });
-
     try {
+      // Convert all photos to base64
+      const base64Photos = await Promise.all(photos.map(convertToBase64));
+
+      const payload = {
+        ...formData,
+        photos: base64Photos,
+      };
+
       const response = await fetch(
         "https://gateway.codeheroes.com.br/webhook/715e13e4-b758-4c8b-be0c-62b28f17b675",
         {
           method: "POST",
-          body: formDataToSend,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         }
       );
 
@@ -75,22 +88,14 @@ const Register = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setPhotos(Array.from(e.target.files));
-    }
-  };
-
   const handleCameraCapture = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      // Here you would typically implement the camera capture UI
-      // For now, we'll just show a message
       toast({
         title: "Camera",
         description: "Camera functionality would be implemented here",
       });
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
     } catch (error) {
       toast({
         title: "Error",
@@ -104,7 +109,9 @@ const Register = () => {
     <div className="min-h-screen p-6 bg-gray-50">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Register New Cargo</CardTitle>
+          <CardTitle className="text-2xl text-center">
+            Register New Cargo
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -147,7 +154,9 @@ const Register = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="containerNumber">Container Number (optional)</Label>
+                <Label htmlFor="containerNumber">
+                  Container Number (optional)
+                </Label>
                 <Input
                   id="containerNumber"
                   value={formData.containerNumber}
@@ -163,37 +172,23 @@ const Register = () => {
                   required
                   value={formData.registrationNumber}
                   onChange={(e) =>
-                    setFormData({ ...formData, registrationNumber: e.target.value })
+                    setFormData({
+                      ...formData,
+                      registrationNumber: e.target.value,
+                    })
                   }
                 />
               </div>
             </div>
 
-            {/* Image Upload */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">3. Image Upload</h3>
-              <div className="space-y-2">
-                <Label htmlFor="photos">Photos</Label>
-                <Input
-                  id="photos"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="cursor-pointer"
-                />
-              </div>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleCameraCapture}
-                className="w-full"
-              >
-                Take Photo
-              </Button>
-            </div>
+            {/* Image Upload Section */}
+            <ImageUploadSection
+              photos={photos}
+              onPhotosChange={setPhotos}
+              onCameraCapture={handleCameraCapture}
+            />
 
-            {/* Operator */}
+            {/* Operator Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">4. Operator</h3>
               <div className="space-y-2">
