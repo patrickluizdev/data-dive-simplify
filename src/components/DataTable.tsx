@@ -26,6 +26,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PhotosDisplay } from "./PhotosDisplay";
 
 interface Record {
   "Carimbo de data/hora": string;
@@ -79,25 +80,6 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
     return <TableSkeleton />;
   }
 
-  const renderImageThumbnails = (imageUrls: string) => {
-    if (!imageUrls) return null;
-    
-    const urls = imageUrls.split(",").map((url) => url.trim());
-    return (
-      <div className="flex gap-2 flex-wrap">
-        {urls.map((url, index) => (
-          <img
-            key={index}
-            src={url}
-            alt={`Thumbnail ${index + 1}`}
-            className="w-20 h-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => onImageClick(url)}
-          />
-        ))}
-      </div>
-    );
-  };
-
   const toggleColumn = (columnId: string) => {
     const newVisibleColumns = new Set(visibleColumns);
     if (newVisibleColumns.has(columnId)) {
@@ -141,6 +123,7 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
         description: "Record updated successfully",
       });
       setIsEditDialogOpen(false);
+      window.location.reload();
     } catch (error) {
       console.error('Error updating record:', error);
       toast({
@@ -196,7 +179,10 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
                   visibleColumns.has(column.id) && (
                     <TableCell key={column.id}>
                       {column.id === "Registos - Fotos" 
-                        ? renderImageThumbnails(record[column.id])
+                        ? <PhotosDisplay 
+                            photosData={record[column.id]} 
+                            onImageClick={onImageClick}
+                          />
                         : record[column.id]?.toString() || '-'}
                     </TableCell>
                   )
