@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { TableSkeleton } from "./TableSkeleton";
 import { Button } from "@/components/ui/button";
-import { FileEdit, FileText, Settings2 } from "lucide-react";
+import { FileEdit, FileText, FilePdf, Settings2 } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PhotosDisplay } from "./PhotosDisplay";
+import { generatePDF } from "@/utils/pdfGenerator";
 
 interface Record {
   "Carimbo de data/hora": string;
@@ -134,6 +135,24 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
     }
   };
 
+  const handleGeneratePDF = async (record: Record) => {
+    console.log('Generating PDF for record:', record);
+    try {
+      await generatePDF(record);
+      toast({
+        title: "Sucesso",
+        description: "PDF gerado com sucesso",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao gerar PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
@@ -194,7 +213,7 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
                     onClick={() => handleEditClick(record)}
                   >
                     <FileEdit className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
+                    <span className="sr-only">Editar</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -202,7 +221,15 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
                     onClick={() => handleGenerateReport(record.Id)}
                   >
                     <FileText className="h-4 w-4" />
-                    <span className="sr-only">Generate Report</span>
+                    <span className="sr-only">Gerar Relatório</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleGeneratePDF(record)}
+                  >
+                    <FilePdf className="h-4 w-4" />
+                    <span className="sr-only">Exportar PDF</span>
                   </Button>
                 </TableCell>
               </TableRow>
