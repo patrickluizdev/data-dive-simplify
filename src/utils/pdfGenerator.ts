@@ -13,10 +13,7 @@ interface Record {
   Id: number;
 }
 
-export const generatePDF = async (record: Record) => {
-  console.log('Generating PDF for record:', record);
-
-  // Create a temporary div to render the template
+const createPDFContent = (record: Record) => {
   const container = document.createElement('div');
   container.innerHTML = `
     <div class="container" style="padding: 20px; font-family: Arial, sans-serif;">
@@ -73,29 +70,54 @@ export const generatePDF = async (record: Record) => {
     </div>
   `;
 
-  // Add photos to the template
-  const fotosContainer = container.querySelector('.fotos');
-  if (fotosContainer && record["Registos - Fotos"]) {
-    const urls = record["Registos - Fotos"].split(',');
-    for (const url of urls) {
-      if (url.trim()) {
-        const img = document.createElement('img');
-        img.src = url.trim();
-        img.alt = "Foto do registo de carga";
-        img.style.width = '100%';
-        img.style.marginBottom = '10px';
-        fotosContainer.appendChild(img);
+  return container;
+};
+
+const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+};
+
+export const generatePDF = async (record: Record) => {
+  try {
+    console.log('Starting PDF generation for record:', record);
+    const container = createPDFContent(record);
+    document.body.appendChild(container);
+
+    // Handle photos
+    const fotosContainer = container.querySelector('.fotos');
+    if (fotosContainer && record["Registos - Fotos"]) {
+      const urls = record["Registos - Fotos"].split(',').map(url => url.trim());
+      console.log('Processing photos:', urls);
+
+      for (const url of urls) {
+        if (url) {
+          try {
+            const img = await loadImage(url);
+            img.style.width = '100%';
+            img.style.marginBottom = '10px';
+            img.style.maxHeight = '300px';
+            img.style.objectFit = 'contain';
+            fotosContainer.appendChild(img);
+          } catch (error) {
+            console.error('Error loading image:', url, error);
+          }
+        }
       }
     }
-  }
 
-  document.body.appendChild(container);
-
-  try {
+    // Generate PDF with better quality
     const canvas = await html2canvas(container, {
       scale: 2,
+      useCORS: true,
       logging: true,
-      useCORS: true
+      allowTaint: true,
+      backgroundColor: '#ffffff'
     });
 
     const imgData = canvas.toDataURL('image/jpeg', 1.0);
@@ -103,13 +125,29 @@ export const generatePDF = async (record: Record) => {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    // Calculate scaling to fit content properly
+    const contentRatio = canvas.height / canvas.width;
+    const pageRatio = pdfHeight / pdfWidth;
+    
+    let finalWidth = pdfWidth;
+    let finalHeight = pdfWidth * contentRatio;
+    
+    // If content is taller than page, scale it down
+    if (finalHeight > pdfHeight) {
+      finalHeight = pdfHeight;
+      finalWidth = pdfHeight / contentRatio;
+    }
+    
+    // Center content horizontally if needed
+    const xOffset = (pdfWidth - finalWidth) / 2;
+    
+    pdf.addImage(imgData, 'JPEG', xOffset, 0, finalWidth, finalHeight);
     pdf.save(`registo-carga-${record.Id}.pdf`);
     
+    document.body.removeChild(container);
     console.log('PDF generated successfully');
   } catch (error) {
     console.error('Error generating PDF:', error);
-  } finally {
-    document.body.removeChild(container);
+    throw error;
   }
 };
