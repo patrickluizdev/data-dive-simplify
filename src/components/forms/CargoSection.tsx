@@ -24,9 +24,9 @@ export const CargoSection = ({
 }: CargoSectionProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">2. Cargo Information</h3>
+      <h3 className="text-lg font-semibold">2. Informação da Carga</h3>
       <div className="space-y-2">
-        <Label htmlFor="companyName">Company Name</Label>
+        <Label htmlFor="companyName">Nome da Empresa</Label>
         <Input
           id="companyName"
           required
@@ -35,7 +35,7 @@ export const CargoSection = ({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="orderNumber">Order Number</Label>
+        <Label htmlFor="orderNumber">Número da Encomenda</Label>
         <Input
           id="orderNumber"
           required
@@ -44,7 +44,7 @@ export const CargoSection = ({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="containerNumber">Container Number (optional)</Label>
+        <Label htmlFor="containerNumber">Número do Contentor (opcional)</Label>
         <Input
           id="containerNumber"
           value={containerNumber}
@@ -52,7 +52,7 @@ export const CargoSection = ({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="registrationNumber">Registration Number</Label>
+        <Label htmlFor="registrationNumber">Número de Matrícula</Label>
         <Input
           id="registrationNumber"
           required

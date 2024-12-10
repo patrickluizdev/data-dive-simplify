@@ -16,12 +16,12 @@ interface ClientSectionProps {
 export const ClientSection = ({ companies, value, onChange }: ClientSectionProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">1. Client</h3>
+      <h3 className="text-lg font-semibold">1. Cliente</h3>
       <div className="space-y-2">
-        <Label htmlFor="companyName">Company Name</Label>
+        <Label htmlFor="companyName">Nome da Empresa</Label>
         <Select value={value} onValueChange={onChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Select company" />
+            <SelectValue placeholder="Selecione a empresa" />
           </SelectTrigger>
           <SelectContent>
             {companies.map((company) => (

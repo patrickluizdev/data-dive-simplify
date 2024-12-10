@@ -55,7 +55,7 @@ const Dashboard = () => {
     queryKey: ["records", page],
     queryFn: async () => {
       try {
-        console.log(`Fetching data for page ${page}...`);
+        console.log(`A buscar dados para a página ${page}...`);
         const response = await fetch(
           `https://gateway.codeheroes.com.br/webhook/data/registros/?p=${page * 10}`,
           {
@@ -66,13 +66,13 @@ const Dashboard = () => {
           }
         );
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error("Falha ao buscar dados");
         }
         const jsonData = await response.json() as ApiResponse;
-        console.log("Fetched data:", jsonData);
+        console.log("Dados obtidos:", jsonData);
         return jsonData.data;
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Erro ao buscar dados:", err);
         throw err;
       }
     },
@@ -108,8 +108,8 @@ const Dashboard = () => {
   useEffect(() => {
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to load data. Please try again later.",
+        title: "Erro",
+        description: "Falha ao carregar dados. Por favor, tente novamente mais tarde.",
         variant: "destructive",
       });
     }
@@ -132,9 +132,9 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Records Dashboard</h1>
+          <h1 className="text-2xl font-bold">Painel de Registos</h1>
           <Button onClick={handleLogout} variant="outline">
-            Logout
+            Terminar Sessão
           </Button>
         </div>
 
@@ -156,7 +156,7 @@ const Dashboard = () => {
                 />
               </PaginationItem>
               <PaginationItem>
-                <span className="px-4 py-2">Page {page}</span>
+                <span className="px-4 py-2">Página {page}</span>
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext 
@@ -168,7 +168,7 @@ const Dashboard = () => {
           </Pagination>
           
           <div className="text-sm text-gray-600">
-            Total Records: {totalData || 'Loading...'}
+            Total de Registos: {totalData || 'A carregar...'}
           </div>
         </div>
 

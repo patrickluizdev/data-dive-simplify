@@ -25,7 +25,7 @@ export const ImageUploadSection = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">3. Image Upload</h3>
+      <h3 className="text-lg font-semibold">3. Carregamento de Imagens</h3>
       <div className="space-y-2">
         <Input
           id="photos"
@@ -47,7 +47,7 @@ export const ImageUploadSection = ({
         onClick={onCameraCapture}
         className="w-full"
       >
-        Take Photo
+        Tirar Fotografia
       </Button>
     </div>
   );

@@ -16,18 +16,17 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple authentication check
     if (username === "admin" && password === "admin") {
       toast({
-        title: "Login successful",
-        description: "Welcome back!",
+        title: "Login bem-sucedido",
+        description: "Bem-vindo de volta!",
       });
       localStorage.setItem("isAuthenticated", "true");
       navigate("/dashboard");
     } else {
       toast({
-        title: "Login failed",
-        description: "Invalid credentials. Please try again.",
+        title: "Falha no login",
+        description: "Credenciais inválidas. Por favor, tente novamente.",
         variant: "destructive",
       });
     }
@@ -38,14 +37,14 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Login</CardTitle>
+          <CardTitle className="text-2xl text-center">Iniciar Sessão</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Input
                 type="text"
-                placeholder="Username"
+                placeholder="Nome de utilizador"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -54,7 +53,7 @@ const Login = () => {
             <div className="space-y-2">
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="Palavra-passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -65,12 +64,12 @@ const Login = () => {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? "A iniciar sessão..." : "Iniciar Sessão"}
             </Button>
             <div className="text-center">
               <Link to="/register">
                 <Button variant="link" type="button" className="mt-2">
-                  Register New Cargo
+                  Registar Nova Carga
                 </Button>
               </Link>
             </div>

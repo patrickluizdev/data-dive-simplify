@@ -53,7 +53,7 @@ export const EditRecordDialog = ({
     if (!editingRecord) return;
 
     try {
-      console.log('Submitting edit for record:', editingRecord);
+      console.log('A submeter edição para o registo:', editingRecord);
       const response = await fetch('https://gateway.codeheroes.com.br/webhook/data/edit', {
         method: 'POST',
         headers: {
@@ -63,21 +63,21 @@ export const EditRecordDialog = ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update record');
+        throw new Error('Falha ao atualizar registo');
       }
 
       toast({
-        title: "Success",
-        description: "Record updated successfully",
+        title: "Sucesso",
+        description: "Registo atualizado com sucesso",
       });
       onSuccess();
       onClose();
-      window.location.reload(); // Refresh the page after successful edit
+      window.location.reload();
     } catch (error) {
-      console.error('Error updating record:', error);
+      console.error('Erro ao atualizar registo:', error);
       toast({
-        title: "Error",
-        description: "Failed to update record",
+        title: "Erro",
+        description: "Falha ao atualizar registo",
         variant: "destructive",
       });
     }
@@ -87,7 +87,7 @@ export const EditRecordDialog = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Record</DialogTitle>
+          <DialogTitle>Editar Registo</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {editingRecord && columns.map((column) => (
@@ -116,7 +116,7 @@ export const EditRecordDialog = ({
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleEditSubmit}>
-            Save changes
+            Guardar alterações
           </Button>
         </DialogFooter>
       </DialogContent>

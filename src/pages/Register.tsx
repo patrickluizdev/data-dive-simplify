@@ -41,7 +41,6 @@ const Register = () => {
   });
   const [photos, setPhotos] = useState<File[]>([]);
 
-  // Fetch companies and operators from API
   const { data: apiData, isLoading: isLoadingData } = useQuery({
     queryKey: ["formOptions"],
     queryFn: async () => {
@@ -49,7 +48,7 @@ const Register = () => {
         "https://gateway.codeheroes.com.br/webhook/data/registros/info"
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch form options");
+        throw new Error("Falha ao buscar opções do formulário");
       }
       return response.json() as Promise<ApiResponse>;
     },
@@ -89,17 +88,17 @@ const Register = () => {
 
       if (response.ok) {
         toast({
-          title: "Success",
-          description: "Registration completed successfully!",
+          title: "Sucesso",
+          description: "Registo concluído com sucesso!",
         });
         navigate("/");
       } else {
-        throw new Error("Registration failed");
+        throw new Error("Falha no registo");
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to complete registration. Please try again.",
+        title: "Erro",
+        description: "Falha ao completar o registo. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -111,14 +110,14 @@ const Register = () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       toast({
-        title: "Camera",
-        description: "Camera functionality would be implemented here",
+        title: "Câmara",
+        description: "Funcionalidade da câmara seria implementada aqui",
       });
       stream.getTracks().forEach((track) => track.stop());
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to access camera",
+        title: "Erro",
+        description: "Falha ao aceder à câmara",
         variant: "destructive",
       });
     }
@@ -127,7 +126,7 @@ const Register = () => {
   if (isLoadingData) {
     return (
       <div className="min-h-screen p-6 bg-gray-50 flex items-center justify-center">
-        <div className="text-center">Loading...</div>
+        <div className="text-center">A carregar...</div>
       </div>
     );
   }
@@ -140,7 +139,7 @@ const Register = () => {
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl text-center">
-            Register New Cargo
+            Registar Nova Carga
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -185,7 +184,7 @@ const Register = () => {
             />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Submitting..." : "Submit Registration"}
+              {isLoading ? "A submeter..." : "Submeter Registo"}
             </Button>
           </form>
         </CardContent>

@@ -16,12 +16,12 @@ interface OperatorSectionProps {
 export const OperatorSection = ({ operators, value, onChange }: OperatorSectionProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">4. Operator</h3>
+      <h3 className="text-lg font-semibold">4. Operador</h3>
       <div className="space-y-2">
-        <Label htmlFor="operator">Responsible Operator</Label>
+        <Label htmlFor="operator">Operador Responsável</Label>
         <Select value={value} onValueChange={onChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Select operator" />
+            <SelectValue placeholder="Selecione o operador" />
           </SelectTrigger>
           <SelectContent>
             {operators.map((operator) => (
