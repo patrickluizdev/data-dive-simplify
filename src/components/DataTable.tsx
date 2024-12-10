@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { TableSkeleton } from "./TableSkeleton";
 import { Button } from "@/components/ui/button";
-import { FileEdit, FileText, FilePdf, Settings2 } from "lucide-react";
+import { FileEdit, FileText, FileDown, Settings2 } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -228,7 +228,7 @@ export const DataTable = ({ data, isLoading, onImageClick }: DataTableProps) => 
                     size="sm"
                     onClick={() => handleGeneratePDF(record)}
                   >
-                    <FilePdf className="h-4 w-4" />
+                    <FileDown className="h-4 w-4" />
                     <span className="sr-only">Exportar PDF</span>
                   </Button>
                 </TableCell>
